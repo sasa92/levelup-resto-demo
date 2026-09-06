@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* On applique directement le fond sombre et la police fluide */
+html {
+  scroll-behavior: smooth;
+  background-color: #020617; /* Slate-950 */
+  color: #ffffff;
+}
