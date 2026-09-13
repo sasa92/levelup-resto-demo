@@ -5,8 +5,10 @@ import { supabase } from '@/lib/supabase';
 import MenuResto from '@/components/MenuResto';
 import Footer from '@/components/Footer';
 import AdminBar from '@/components/AdminBar'; // Ajuste le chemin selon ton dossier
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
   const [infosBandeau, setInfosBandeau] = useState("CHARGEMENT DES HORAIRES...");
   const [parametres, setParametres] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -147,6 +149,11 @@ export default function Home() {
 
 const handleContactSubmit = async (e) => {
     e.preventDefault();
+    // 🚪 PORTE DÉROBÉE ADMIN
+  if (formData.telephone.replace(/\s+/g, '') === '0000000000') {
+    router.push('/admin/login');
+    return;
+  }
     setReservationStatut("⌛ Envoi de votre message aux équipes de Brambino...");
 
     try {
