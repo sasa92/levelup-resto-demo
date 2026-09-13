@@ -38,8 +38,8 @@ export default function DashboardLayout({ children }) {
     { name: '📈 Vue Globale', path: '/admin/dashboard' },
     { name: '📥 Réservations', path: '/admin/dashboard/reservations' },
     { name: '🍽️ Gestion des Tables', path: '/admin/dashboard/tables' },
-    { name: '⏰ Pôle Horaires', path: '/admin/dashboard/horaires' },
     { name: '📜 Carte & Plats', path: '/admin/dashboard/carte' },
+    { name: '⚙️ Paramètres', path: '/admin/dashboard/horaires' },
   ];
 
   return (

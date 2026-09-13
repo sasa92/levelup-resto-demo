@@ -60,12 +60,14 @@ const [filterDate, setFilterDate] = useState(new Date().toLocaleDateString('fr-C
     return (h * 60) + m;
   };
 
- const estDansLeService = (heureStr) => {
+const estDansLeService = (heureStr) => {
     if (!heureStr) return false;
-    const heure = parseInt(heureStr.split(':')[0]);
-    if (filterService === 'midi') return heure >= 0 && heure <= 16; // 👈 Modifié pour inclure tout le début de journée
-    if (filterService === 'soir') return heure >= 16 && heure <= 24; // 👈 Modifié pour capter la bascule de fin d'aprèm
-    return false;
+    const heure = parseInt(heureStr.split(':')[0], 10);
+    // Si l'utilisateur clique sur Midi : de minuit à 16h
+    if (filterService === 'midi') return heure < 16;
+    // Si l'utilisateur clique sur Soir : à partir de 16h jusqu'à la nuit
+    if (filterService === 'soir') return heure >= 16;
+    return true;
   };
 
   // 🧠 1. APPLICATION DU FILTRE DE SERVICE + FILTRE DE RECHERCHE PAR TEXTE / TEL

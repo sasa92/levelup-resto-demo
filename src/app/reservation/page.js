@@ -13,6 +13,8 @@ export default function PageReservationCalendrier() {
   const [toutesLesLiaisons, setToutesLesLiaisons] = useState([]);
   const [dureeRepasMinutes, setDureeRepasMinutes] = useState(105);
   const [loadingSystem, setLoadingSystem] = useState(true);
+  const [telephoneContact, setTelephoneContact] = useState('01 00 00 00 00');
+  const [messageComplet, setMessageComplet] = useState('');
 
   // Données du formulaire
   const [formData, setFormData] = useState({
@@ -42,8 +44,12 @@ export default function PageReservationCalendrier() {
         const { data: l } = await supabase.from('reservations_tables').select('*');
         if (l) setToutesLesLiaisons(l);
 
-        const { data: p } = await supabase.from('parametres').select('duree_repas').eq('id', 1).single();
-        if (p?.duree_repas) setDureeRepasMinutes(p.duree_repas);
+        const { data: p } = await supabase.from('parametres').select('duree_repas, telephone_contact, message_complet').eq('id', 1).single();
+        if (p) {
+          if (p.duree_repas) setDureeRepasMinutes(p.duree_repas);
+          if (p.telephone_contact) setTelephoneContact(p.telephone_contact);
+          if (p.message_complet) setMessageComplet(p.message_complet);
+        }
       } catch (err) {
         console.error("Erreur de chargement des paramètres:", err);
       } finally {
@@ -53,10 +59,14 @@ export default function PageReservationCalendrier() {
     chargerMoteurDonnees();
   }, []);
 
-  const toMinutes = (tStr) => { 
+const toMinutes = (tStr) => { 
     if (!tStr) return 0; 
-    const [h, m] = tStr.split(':').map(Number); 
-    return h * 60 + m; 
+    // Nettoie la chaîne : remplace "h" ou "H" par ":" (ex: "23h" -> "23:", "23h30" -> "23:30")
+    const cleanStr = tStr.toString().toLowerCase().trim().replace('h', ':');
+    const parties = cleanStr.split(':');
+    const h = parseInt(parties[0], 10) || 0;
+    const m = parseInt(parties[1], 10) || 0;
+    return (h * 60) + m; 
   };
 
   // 🧠 Algorithme de calcul de disponibilité et couplage de tables
@@ -373,11 +383,17 @@ const isSelected = formData.date === localStr;
                 </div>
 
                 <div className="space-y-3">
-                  <div className="text-[10px] font-mono p-4 bg-stone-950 border border-white/5 text-stone-400 leading-relaxed uppercase space-y-1">
-                    <p>⚙️ Durée du repas retenue : {dureeRepasMinutes} minutes.</p>
-                    <p className="text-amber-400 font-medium pt-1">
-                      ⚠️ "ARRANGEMENT" : Pas de table unique de {formData.couverts}P libre, mais nous pouvons combiner des tables plus petites si vous validez.
-                    </p>
+
+                  <div className="text-[10px] font-mono p-4 bg-stone-950 border border-white/5 text-stone-400 leading-relaxed uppercase space-y-3">
+                    <p>⚙️ Durée moyenne estimée du repas : {dureeRepasMinutes} minutes.</p>
+                    
+                    <div className="p-3 bg-amber-500/10 border border-amber-500/20 text-amber-400 space-y-3">
+                      <p className="font-bold text-[11px]">⚠️ Salle complète ou Arrangement requis ?</p>
+                      <p className="text-[9px] tracking-wider leading-relaxed text-stone-300 normal-case">{messageComplet}</p>
+                      <a href={`tel:${telephoneContact.replace(/\s+/g, '')}`} className="inline-block mt-1 w-full text-center py-2.5 bg-amber-500 text-black font-bold tracking-widest hover:bg-white transition-all uppercase">
+                        📞 Appeler le {telephoneContact}
+                      </a>
+                    </div>
                   </div>
 
                   <button type="button" onClick={() => { setStep(1); setFormData({...formData, date: ''}); }} className="w-full py-3 border border-white/10 text-stone-400 hover:text-white font-mono text-xs uppercase tracking-widest transition-all">

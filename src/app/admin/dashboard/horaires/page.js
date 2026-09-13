@@ -4,8 +4,7 @@ import { supabase } from '@/lib/supabase';
 
 export default function PoleHoraires() {
   const [horaires, setHoraires] = useState([]);
-  const [parametres, setParametres] = useState({ fermeture_globale: false, alerte_active: false, message_alerte: '' });
-  const [loading, setLoading] = useState(true);
+const [parametres, setParametres] = useState({ fermeture_globale: false, alerte_active: false, message_alerte: '', duree_repas: 105, telephone_contact: '', message_complet: '' });  const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
   const [msg, setMsg] = useState({ id: null, text: '', type: '' });
 
@@ -45,7 +44,9 @@ export default function PoleHoraires() {
       fermeture_globale: static_param_fix(parametres.fermeture_globale),
       alerte_active: static_param_fix(parametres.alerte_active),
       message_alerte: parametres.message_alerte,
-      duree_repas: parseInt(parametres.duree_repas || 105) // 👈 ON AJOUTE CETTE LIGNE ICI
+      duree_repas: parseInt(parametres.duree_repas || 105),
+      telephone_contact: parametres.telephone_contact || '',
+      message_complet: parametres.message_complet || ''
     }).eq('id', 1);
 
     if (error) {
@@ -319,6 +320,37 @@ const handleCloseJour = (id) => {
                 placeholder="Ex: 105"
               />
               <span className="text-xs font-mono text-stone-400 uppercase tracking-widest">Minutes</span>
+            </div>
+          </div>
+          {/* CONFIGURATION CONTACT & MESSAGE DE COMPLÉTION */}
+          <div className="space-y-4 p-4 bg-stone-950/50 border border-amber-500/10 lg:col-span-2">
+            <div>
+              <p className="text-sm font-serif text-amber-400">Contact & Message "Salle Complète"</p>
+              <p className="text-[10px] font-mono text-stone-500 mt-1">
+                Texte affiché aux clients quand le créneau est complet ou nécessite un arrangement de tables.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-1 space-y-2">
+                <label className="text-[9px] font-mono text-stone-400 uppercase tracking-widest">Numéro d'appel</label>
+                <input 
+                  type="text" 
+                  value={parametres.telephone_contact || ''} 
+                  onChange={(e) => handleLocalParamChange('telephone_contact', e.target.value)}
+                  placeholder="Ex: 01 40 00 00 00" 
+                  className="w-full bg-stone-900 border border-white/10 p-3 text-xs font-mono text-stone-200 outline-none focus:border-amber-500/50 rounded-none"
+                />
+              </div>
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-[9px] font-mono text-stone-400 uppercase tracking-widest">Message incitatif</label>
+                <textarea 
+                  value={parametres.message_complet || ''} 
+                  onChange={(e) => handleLocalParamChange('message_complet', e.target.value)}
+                  placeholder="Des tables peuvent se libérer au dernier moment..." 
+                  className="w-full bg-stone-900 border border-white/10 p-3 text-xs font-mono text-stone-200 resize-none outline-none focus:border-amber-500/50 rounded-none"
+                  rows={2}
+                />
+              </div>
             </div>
           </div>
 
